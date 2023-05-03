@@ -2,20 +2,14 @@ package info.fekri.dunibazaar.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-
-private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200
-)
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200
+    primary = Blue,
+    primaryVariant = BackgroundMain,
+    secondary = Blue
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -30,11 +24,7 @@ private val LightColorPalette = lightColors(
 
 @Composable
 fun MainAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
+    val colors = LightColorPalette
 
     MaterialTheme(
         colors = colors,
@@ -42,5 +32,8 @@ fun MainAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composabl
         shapes = Shapes,
         content = content
     )
+
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(Blue)
 
 }
