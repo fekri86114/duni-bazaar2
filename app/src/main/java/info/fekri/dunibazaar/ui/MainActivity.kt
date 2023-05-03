@@ -13,6 +13,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dev.burnoo.cokoin.Koin
+import dev.burnoo.cokoin.navigation.KoinNavHost
+import info.fekri.dunibazaar.di.myModules
 import info.fekri.dunibazaar.ui.features.IntroScreen
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
 import info.fekri.dunibazaar.ui.theme.MainAppTheme
@@ -24,12 +27,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainAppTheme {
-                Surface(
-                    color = BackgroundMain,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    DuniBazaarUi()
+            Koin(appDeclaration = { modules(myModules) }) {
+                MainAppTheme {
+                    Surface(
+                        color = BackgroundMain,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        DuniBazaarUi()
+                    }
                 }
             }
         }
@@ -52,7 +57,7 @@ fun MainPreview() {
 @Composable
 fun DuniBazaarUi() {
     val navController = rememberNavController()
-    NavHost(
+    KoinNavHost(
         navController = navController,
         startDestination = MyScreens.IntroScreen.route
     ) {
@@ -111,7 +116,6 @@ fun DuniBazaarUi() {
 @Composable
 fun NoInternetScreen() {
 }
-
 
 
 @Composable
