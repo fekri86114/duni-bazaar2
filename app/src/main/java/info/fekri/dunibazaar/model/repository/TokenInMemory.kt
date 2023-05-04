@@ -2,14 +2,14 @@ package info.fekri.dunibazaar.model.repository
 
 object TokenInMemory {
 
-    var userName: String? = null
+    var username: String? = null
         private set
 
     var token: String? = null
         private set
 
-    fun refreshToken(userName: String?, newToken: String?) {
-        this.userName = userName
+    fun refreshToken(username: String? , newToken: String? ) {
+        this.username = username
         this.token = newToken
     }
 

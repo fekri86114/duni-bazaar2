@@ -47,42 +47,49 @@ fun IntroScreenPreview() {
 fun IntroScreen() {
     val uiController = rememberSystemUiController()
     SideEffect { uiController.setStatusBarColor(Blue) }
+
     val navigation = getNavController()
 
     Image(
-        painter = painterResource(id = R.drawable.img_intro),
-        contentDescription = null,
         modifier = Modifier.fillMaxSize(),
+        painter = painterResource(R.drawable.img_intro),
+        contentDescription = null,
         contentScale = ContentScale.Crop
     )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.75f),
+            .fillMaxHeight(0.78f),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
+
         Button(
             modifier = Modifier.fillMaxWidth(0.7f),
             onClick = {
-                /* go to `SignUpScreen` */
                 navigation.navigate(MyScreens.SignUpScreen.route)
             }
         ) {
-            Text(text = "Sign Up")
+            Text(
+                text = "Sign Up"
+            )
         }
 
+
         Button(
-            modifier = Modifier
-                .fillMaxWidth(0.7f),
+            modifier = Modifier.fillMaxWidth(0.7f),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
             onClick = {
-                /* go to `SignInScreen` */
                 navigation.navigate(MyScreens.SignInScreen.route)
-            },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+            }
         ) {
-            Text(text = "Sign In", color = Blue)
+            Text(
+                text = "Sign In" ,
+                color = Blue
+            )
         }
+
     }
 
 }
