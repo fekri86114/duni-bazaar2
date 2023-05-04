@@ -28,6 +28,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.dunibazaar.R
@@ -54,6 +56,7 @@ import info.fekri.dunibazaar.ui.theme.Blue
 import info.fekri.dunibazaar.ui.theme.MainAppTheme
 import info.fekri.dunibazaar.ui.theme.Shapes
 import info.fekri.dunibazaar.util.MyScreens
+import info.fekri.dunibazaar.util.NetworkChecker
 
 @Preview(showBackground = true)
 @Composable
@@ -68,9 +71,10 @@ fun SignUpPreview() {
 
 @Composable
 fun SignUpScreen() {
+    val uiController = rememberSystemUiController()
+    SideEffect { uiController.setStatusBarColor(Blue) }
     val navigation = getNavController()
     val viewModel = getNavViewModel<SignUpViewModel>()
-    val context = LocalContext.current
 
     Box {
 
@@ -178,10 +182,20 @@ fun MainCardView(navigation: NavController, viewModel: SignUpViewModel, SignUpEv
                             if (password.value.length >= 8) {
                                 // check email format
                                 if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) {
-                                    // call SignUpEvent
-                                    // you should use `invoke()` when you are using an Event
-                                    // in a method (function)
-                                    SignUpEvent.invoke()
+                                    // check user network
+                                    if (NetworkChecker(context).isInternetConnected) {
+                                        // call SignUpEvent
+                                        // you should use `invoke()` when you are using an Event
+                                        // in a method (function)
+                                        SignUpEvent.invoke()
+                                    } else {
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                "Please, check your internet!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                    }
                                 } else {
                                     Toast
                                         .makeText(

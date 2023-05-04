@@ -26,6 +26,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.dunibazaar.R
@@ -51,6 +53,7 @@ import info.fekri.dunibazaar.ui.theme.Blue
 import info.fekri.dunibazaar.ui.theme.MainAppTheme
 import info.fekri.dunibazaar.ui.theme.Shapes
 import info.fekri.dunibazaar.util.MyScreens
+import info.fekri.dunibazaar.util.NetworkChecker
 
 @Preview(showBackground = true)
 @Composable
@@ -65,6 +68,8 @@ fun SignInPreview() {
 
 @Composable
 fun SignInScreen() {
+    val uiController = rememberSystemUiController()
+    SideEffect { uiController.setStatusBarColor(Blue) }
     val navigation = getNavController()
     val viewModel = getNavViewModel<SignInViewModel>()
 
@@ -154,7 +159,15 @@ fun MainCardView(navigation: NavController, viewModel: SignInViewModel, SignInEv
                     // check use input
                     if (email.value.isNotEmpty() && password.value.isNotEmpty()) {
                         if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) {
-                            SignInEvent.invoke() // call SignInEvent
+                            if (NetworkChecker(context).isInternetConnected) {
+                                SignInEvent.invoke() // call SignInEvent
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Please, check your internet!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         } else {
                             Toast.makeText(
                                 context,
