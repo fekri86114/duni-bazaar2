@@ -52,16 +52,15 @@ fun IntroScreen() {
         contentScale = ContentScale.Crop
     )
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.75f),
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.75f),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
         Button(
             modifier = Modifier.fillMaxWidth(0.7f),
             onClick = {
-
+                /* go to `SignUpScreen` */
+                navigation.navigate(MyScreens.SignUpScreen.route)
             }
         ) {
             Text(text = "Sign Up")
@@ -71,14 +70,12 @@ fun IntroScreen() {
             modifier = Modifier
                 .fillMaxWidth(0.7f),
             onClick = {
-
+                /* go to `SignInScreen` */
+                navigation.navigate(MyScreens.SignInScreen.route)
             },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
         ) {
-            Text(
-                text = "Sign In",
-                color = Blue
-            )
+            Text(text = "Sign In", color = Blue)
         }
     }
 

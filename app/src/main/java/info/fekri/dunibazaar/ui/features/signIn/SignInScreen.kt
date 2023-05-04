@@ -1,4 +1,4 @@
-package info.fekri.dunibazaar.ui.features.signUp
+package info.fekri.dunibazaar.ui.features.signIn
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
@@ -41,7 +40,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.dunibazaar.R
@@ -53,19 +51,19 @@ import info.fekri.dunibazaar.util.MyScreens
 
 @Preview(showBackground = true)
 @Composable
-fun SignUpPreview() {
+fun SignInPreview() {
     MainAppTheme {
         Surface(
             color = BackgroundMain,
             modifier = Modifier.fillMaxSize()
-        ) { SignUpScreen() }
+        ) { SignInScreen() }
     }
 }
 
 @Composable
-fun SignUpScreen() {
+fun SignInScreen() {
     val navigation = getNavController()
-    val viewModel = getNavViewModel<SignUpViewModel>()
+    val viewModel = getNavViewModel<SignInViewModel>()
 
     Box {
 
@@ -79,14 +77,15 @@ fun SignUpScreen() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.95f),
+                .fillMaxHeight(0.80f),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             IconApp()
             MainCardView(navigation, viewModel) {
-                viewModel.signUpUser() // sign up
+                /* sign in */
+                viewModel.signInUser()
             }
 
         }
@@ -111,11 +110,9 @@ fun IconApp() {
 }
 
 @Composable
-fun MainCardView(navigation: NavController, viewModel: SignUpViewModel, SignUpEvent: () -> Unit) {
-    val name = viewModel.name.observeAsState("")
+fun MainCardView(navigation: NavController, viewModel: SignInViewModel, SignUpEvent: () -> Unit) {
     val email = viewModel.email.observeAsState("")
     val password = viewModel.password.observeAsState("")
-    val confirmPassword = viewModel.confirmPassword.observeAsState("")
 
     Card(
         modifier = Modifier
@@ -130,16 +127,10 @@ fun MainCardView(navigation: NavController, viewModel: SignUpViewModel, SignUpEv
         ) {
 
             Text(
-                text = "Sign Up",
+                text = "Sign In",
                 modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
                 style = TextStyle(color = Blue, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             )
-
-            MainTextField(
-                edtValue = name.value,
-                icon = R.drawable.ic_person,
-                hint = "Your full name",
-            ) { viewModel.name.value = it }
 
             MainTextField(
                 edtValue = email.value,
@@ -153,12 +144,6 @@ fun MainCardView(navigation: NavController, viewModel: SignUpViewModel, SignUpEv
                 hint = "Password",
             ) { viewModel.password.value = it }
 
-            PasswordTextField(
-                edtValue = confirmPassword.value,
-                icon = R.drawable.ic_password,
-                hint = "Confirm password",
-            ) { viewModel.confirmPassword.value = it }
-
 
             Button(
                 onClick = SignUpEvent,
@@ -166,7 +151,7 @@ fun MainCardView(navigation: NavController, viewModel: SignUpViewModel, SignUpEv
                     .padding(top = 28.dp, bottom = 18.dp)
             ) {
                 Text(
-                    text = "Register Account",
+                    text = "Login",
                     modifier = Modifier.padding(8.dp)
                 )
             }
@@ -177,17 +162,17 @@ fun MainCardView(navigation: NavController, viewModel: SignUpViewModel, SignUpEv
                 modifier = Modifier.padding(bottom = 18.dp)
             ) {
 
-                Text(text = "Already have and Account?")
+                Text(text = "Don't have an Account?")
                 Spacer(modifier = Modifier.width(8.dp))
                 TextButton(onClick = {
                     // go to SignInScreen if user have account
-                    // and empty the popUpTo to not to comeback to SignUpScreen
-                    navigation.navigate(MyScreens.SignInScreen.route) {
-                        popUpTo(MyScreens.SignUpScreen.route) {
+                    // and empty the popUpTo to not to comeback to SignInScreen
+                    navigation.navigate(MyScreens.SignUpScreen.route) {
+                        popUpTo(MyScreens.SignInScreen.route) {
                             inclusive = true
                         }
                     }
-                }) { Text(text = "Login") }
+                }) { Text(text = "Register here") }
 
             }
 

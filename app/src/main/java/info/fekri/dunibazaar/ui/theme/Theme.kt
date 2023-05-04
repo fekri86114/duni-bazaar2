@@ -8,8 +8,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val LightColorPalette = lightColors(
     primary = Blue,
-    primaryVariant = BackgroundMain,
-    secondary = Blue
+    secondary = Blue,
+    background = BackgroundMain
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
