@@ -21,4 +21,9 @@ val CATEGORY = listOf(
     Pair("Quilted", R.drawable.ic_cat_quilted)
 )
 
-
+val TAGS = listOf<String>(
+    "Newest",
+    "Best Sellers",
+    "Most Visited",
+    "Highest Quality"
+)
