@@ -7,6 +7,7 @@ import info.fekri.dunibazaar.model.data.Ads
 import info.fekri.dunibazaar.model.data.Product
 import info.fekri.dunibazaar.model.repository.product.ProductRepository
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.internal.wait
 
@@ -28,6 +29,9 @@ class MainViewModel(
 
             if (isInternetConnected) {
                 showProgress.value = true
+
+                // this is for test!
+                delay(1200)
 
                 val newDataProducts = async { productRepository.getAllProducts(isInternetConnected) }
                 val newDataAds = async { productRepository.getAllAds(isInternetConnected) }

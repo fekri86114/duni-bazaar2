@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,11 +38,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.dunibazaar.R
+import info.fekri.dunibazaar.model.repository.product.ProductRepository
+import info.fekri.dunibazaar.model.repository.product.ProductRepositoryImpl
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
+import info.fekri.dunibazaar.ui.theme.Blue
 import info.fekri.dunibazaar.ui.theme.CardViewBackground
 import info.fekri.dunibazaar.ui.theme.MainAppTheme
 import info.fekri.dunibazaar.ui.theme.Shapes
+import info.fekri.dunibazaar.util.CATEGORY
+import info.fekri.dunibazaar.util.NetworkChecker
+import org.koin.core.parameter.parametersOf
 
 @Preview(showBackground = true)
 @Composable
@@ -58,8 +67,13 @@ fun MainScreenPreview() {
 @Composable
 fun MainScreen() {
 
+    val context = LocalContext.current
     val uiController = rememberSystemUiController()
     SideEffect { uiController.setStatusBarColor(Color.White) }
+
+    val viewModel = getNavViewModel<MainViewModel>(
+        parameters = { parametersOf(NetworkChecker(context).isInternetConnected) }
+    )
 
     Column(
         modifier = Modifier
@@ -68,17 +82,16 @@ fun MainScreen() {
             .padding(bottom = 16.dp)
     ) {
 
+        if (viewModel.showProgress.value) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = Blue
+            )
+        }
+
         TopToolbar()
 
-        CategoryBar()
-
-        ProductSubject()
-        ProductSubject()
-
-        BigPictureAds()
-
-        ProductSubject()
-        ProductSubject()
+        CategoryBar(CATEGORY)
 
     }
 
@@ -115,21 +128,21 @@ fun TopToolbar() {
 // ----------------------------------------------------------------------
 
 @Composable
-fun CategoryBar() {
+fun CategoryBar(categoryList: List<Pair<String, Int>>) {
 
     LazyRow(
         modifier = Modifier.padding(top = 16.dp),
         contentPadding = PaddingValues(end = 16.dp)
     ) {
-        items(10) {
-            CategoryItem()
+        items(categoryList.size) {
+            CategoryItem(categoryList[it])
         }
     }
 
 }
 
 @Composable
-fun CategoryItem() {
+fun CategoryItem(subject: Pair<String, Int>) {
     Column(
         modifier = Modifier
             .padding(start = 16.dp)
@@ -141,13 +154,13 @@ fun CategoryItem() {
             color = CardViewBackground
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_icon_app),
+                painter = painterResource(id = subject.second),
                 contentDescription = null,
                 modifier = Modifier.padding(16.dp),
             )
         }
         Text(
-            text = "Hotels",
+            text = subject.first,
             modifier = Modifier.padding(top = 4.dp),
             style = TextStyle(color = Color.Gray)
         )
@@ -235,7 +248,7 @@ fun BigPictureAds() {
             .height(260.dp)
             .padding(top = 22.dp, start = 16.dp, end = 16.dp)
             .clip(Shapes.medium)
-            .clickable {  }
+            .clickable { }
     )
 
 }
