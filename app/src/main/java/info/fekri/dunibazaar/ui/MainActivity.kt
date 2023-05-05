@@ -20,6 +20,7 @@ import info.fekri.dunibazaar.di.myModules
 import info.fekri.dunibazaar.model.repository.TokenInMemory
 import info.fekri.dunibazaar.model.repository.user.UserRepository
 import info.fekri.dunibazaar.ui.features.IntroScreen
+import info.fekri.dunibazaar.ui.features.mainScreen.MainScreen
 import info.fekri.dunibazaar.ui.features.signIn.SignInScreen
 import info.fekri.dunibazaar.ui.features.signUp.SignUpScreen
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 MainAppTheme {
                     Surface(color = BackgroundMain, modifier = Modifier.fillMaxSize()) {
 
-                        val userRepository :UserRepository = get()
+                        val userRepository: UserRepository = get()
                         userRepository.loadToken()
 
                         DuniBazaarUi()
@@ -75,7 +76,7 @@ fun DuniBazaarUi() {
 
         composable(MyScreens.MainScreen.route) {
 
-            if(TokenInMemory.token != null) {
+            if (TokenInMemory.token != null) {
                 MainScreen()
             } else {
                 IntroScreen()
@@ -132,10 +133,6 @@ fun DuniBazaarUi() {
 
 }
 
-@Composable
-fun MainScreen() {
-
-}
 
 @Composable
 fun CartScreen() {
