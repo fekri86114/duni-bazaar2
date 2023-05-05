@@ -1,7 +1,9 @@
 package info.fekri.dunibazaar.model.net
 
 import com.google.gson.JsonObject
+import info.fekri.dunibazaar.model.data.AdsResponse
 import info.fekri.dunibazaar.model.data.LoginResponse
+import info.fekri.dunibazaar.model.data.ProductResponse
 import info.fekri.dunibazaar.model.repository.TokenInMemory
 import info.fekri.dunibazaar.util.BASE_URL
 import okhttp3.OkHttpClient
@@ -22,6 +24,12 @@ interface ApiService {
 
     @GET("refreshToken")
     fun refreshToken(): Call<LoginResponse>
+
+    @GET("getProducts")
+    suspend fun getAllProducts(): ProductResponse
+
+    @GET("getSliderPics")
+    suspend fun getAllAds(): AdsResponse
 
 }
 
