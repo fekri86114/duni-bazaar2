@@ -80,6 +80,8 @@ fun SignInScreen() {
     val navigation = getNavController()
     val viewModel = getNavViewModel<SignInViewModel>()
 
+    clearInput(viewModel = viewModel)
+
     Box {
 
         Box(
@@ -105,7 +107,7 @@ fun SignInScreen() {
 
                     if (it == VALUE_SUCCESS) {
                         navigation.navigate(MyScreens.MainScreen.route) {
-                            popUpTo(MyScreens.IntroScreen.route) {
+                            popUpTo(MyScreens.MainScreen.route) {
                                 inclusive = true
                             }
                         }
@@ -233,6 +235,7 @@ fun MainCardView(navigation: NavController, viewModel: SignInViewModel, SignInEv
 fun MainTextField(edtValue: String, icon: Int, hint: String, onValueChanges: (String) -> Unit) {
 
     OutlinedTextField(
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         label = { Text(hint) },
         value = edtValue,
         singleLine = true,
@@ -278,4 +281,9 @@ fun PasswordTextField(edtValue: String, icon: Int, hint: String, onValueChanges:
         }
     )
 
+}
+
+fun clearInput(viewModel: SignInViewModel) {
+    viewModel.email.value = ""
+    viewModel.password.value = ""
 }

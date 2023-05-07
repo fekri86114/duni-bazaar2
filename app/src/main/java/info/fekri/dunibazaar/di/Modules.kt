@@ -8,6 +8,7 @@ import info.fekri.dunibazaar.model.repository.product.ProductRepository
 import info.fekri.dunibazaar.model.repository.product.ProductRepositoryImpl
 import info.fekri.dunibazaar.model.repository.user.UserRepository
 import info.fekri.dunibazaar.model.repository.user.UserRepositoryImpl
+import info.fekri.dunibazaar.ui.features.categoryScreen.CategoryViewModel
 import info.fekri.dunibazaar.ui.features.mainScreen.MainViewModel
 import info.fekri.dunibazaar.ui.features.signIn.SignInViewModel
 import info.fekri.dunibazaar.ui.features.signUp.SignUpViewModel
@@ -35,4 +36,5 @@ val myModules = module {
     viewModel { SignUpViewModel(get()) }
     viewModel { SignInViewModel(get()) }
     viewModel { (isNetConnected: Boolean) -> MainViewModel(get(), isNetConnected) }
+    viewModel { CategoryViewModel(get()) }
 }

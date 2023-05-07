@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import info.fekri.dunibazaar.model.data.Ads
 import info.fekri.dunibazaar.model.data.Product
 import info.fekri.dunibazaar.model.repository.product.ProductRepository
+import info.fekri.dunibazaar.util.coroutineExceptionHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,7 +26,7 @@ class MainViewModel(
 
     private fun refreshAllDataFromNet(isInternetConnected: Boolean) {
 
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineExceptionHandler) {
 
             if (isInternetConnected) {
                 showProgress.value = true

@@ -3,8 +3,10 @@ package info.fekri.dunibazaar.ui.features.signUp
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +18,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -80,6 +84,8 @@ fun SignUpScreen() {
     val navigation = getNavController()
     val viewModel = getNavViewModel<SignUpViewModel>()
 
+    clearInputs(viewModel = viewModel)
+
     Box {
 
         Box(
@@ -92,7 +98,8 @@ fun SignUpScreen() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.95f),
+                .fillMaxHeight(0.95f)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -106,7 +113,7 @@ fun SignUpScreen() {
                     if (it == VALUE_SUCCESS) {
 
                         navigation.navigate(MyScreens.MainScreen.route) {
-                            popUpTo(MyScreens.IntroScreen.route) {
+                            popUpTo(MyScreens.MainScreen.route) {
                                 inclusive = true
                             }
                         }
@@ -258,6 +265,7 @@ fun MainCardView(navigation: NavController, viewModel: SignUpViewModel, SignUpEv
 fun MainTextField(edtValue: String, icon: Int, hint: String, onValueChanges: (String) -> Unit) {
 
     OutlinedTextField(
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         label = { Text(hint) },
         value = edtValue,
         singleLine = true,
@@ -303,4 +311,11 @@ fun PasswordTextField(edtValue: String, icon: Int, hint: String, onValueChanges:
         }
     )
 
+}
+
+fun clearInputs(viewModel: SignUpViewModel) {
+    viewModel.name.value = ""
+    viewModel.email.value = ""
+    viewModel.password.value = ""
+    viewModel.confirmPassword.value = ""
 }
