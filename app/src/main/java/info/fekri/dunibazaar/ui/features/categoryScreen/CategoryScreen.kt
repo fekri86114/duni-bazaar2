@@ -116,14 +116,15 @@ fun CategoryItem(data: Product, onProductItemClicked: (String) -> Unit) {
                         .padding(bottom = 8.dp, end = 8.dp)
                         .align(Alignment.Bottom)
                         .clip(Shapes.large),
-                    color = CardViewBackground
+                    color = Blue
                 ) {
                     Text(
                         text = "${data.soldItem} sold",
                         modifier = Modifier.padding(4.dp),
                         style = TextStyle(
                             fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White
                         )
                     )
                 }

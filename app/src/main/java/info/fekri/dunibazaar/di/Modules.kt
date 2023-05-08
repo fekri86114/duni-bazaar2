@@ -10,6 +10,7 @@ import info.fekri.dunibazaar.model.repository.user.UserRepository
 import info.fekri.dunibazaar.model.repository.user.UserRepositoryImpl
 import info.fekri.dunibazaar.ui.features.categoryScreen.CategoryViewModel
 import info.fekri.dunibazaar.ui.features.mainScreen.MainViewModel
+import info.fekri.dunibazaar.ui.features.productScreen.ProductViewModel
 import info.fekri.dunibazaar.ui.features.signIn.SignInViewModel
 import info.fekri.dunibazaar.ui.features.signUp.SignUpViewModel
 import org.koin.android.ext.koin.androidContext
@@ -21,13 +22,11 @@ val myModules = module {
     single { createApiService() }
 
     single {
-
         Room.databaseBuilder(
             androidContext(),
             AppDatabase::class.java,
             "duni_bazaar_database.db",
         ).build()
-
     }
 
     single<UserRepository> { UserRepositoryImpl(get(), get()) }
@@ -37,4 +36,5 @@ val myModules = module {
     viewModel { SignInViewModel(get()) }
     viewModel { (isNetConnected: Boolean) -> MainViewModel(get(), isNetConnected) }
     viewModel { CategoryViewModel(get()) }
+    viewModel { ProductViewModel() }
 }

@@ -22,6 +22,7 @@ import info.fekri.dunibazaar.model.repository.user.UserRepository
 import info.fekri.dunibazaar.ui.features.IntroScreen
 import info.fekri.dunibazaar.ui.features.categoryScreen.CategoryScreen
 import info.fekri.dunibazaar.ui.features.mainScreen.MainScreen
+import info.fekri.dunibazaar.ui.features.productScreen.ProductScreen
 import info.fekri.dunibazaar.ui.features.signIn.SignInScreen
 import info.fekri.dunibazaar.ui.features.signUp.SignUpScreen
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
@@ -134,8 +135,5 @@ fun ProfileScreen() {
 
 }
 
-@Composable
-fun ProductScreen(productId: String) {
 
-}
 
