@@ -2,6 +2,7 @@ package info.fekri.dunibazaar.model.net
 
 import com.google.gson.JsonObject
 import info.fekri.dunibazaar.model.data.AdsResponse
+import info.fekri.dunibazaar.model.data.CommentResponse
 import info.fekri.dunibazaar.model.data.LoginResponse
 import info.fekri.dunibazaar.model.data.ProductResponse
 import info.fekri.dunibazaar.model.repository.TokenInMemory
@@ -30,6 +31,9 @@ interface ApiService {
 
     @GET("getSliderPics")
     suspend fun getAllAds(): AdsResponse
+
+    @POST("getComments")
+    suspend fun getAllComments(@Body jsonObject: JsonObject): CommentResponse
 
 }
 
