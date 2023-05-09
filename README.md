@@ -4,7 +4,7 @@
 ---
 
 ### About:
-* *Languagee/s* %100 *Kotlin* 😍🔥
+* *Language/s* %100 *Kotlin* 😍🔥
 * *Developd with Jetpack Compose* 😁😎😋🤩
 * *Di*
 * *MVVM*
