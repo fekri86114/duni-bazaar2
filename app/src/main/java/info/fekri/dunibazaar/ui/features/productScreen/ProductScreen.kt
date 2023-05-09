@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Badge
@@ -20,6 +23,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -44,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
@@ -51,6 +56,7 @@ import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.dunibazaar.R
 import info.fekri.dunibazaar.model.data.Comment
 import info.fekri.dunibazaar.model.data.Product
+import info.fekri.dunibazaar.ui.features.signUp.MainTextField
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
 import info.fekri.dunibazaar.ui.theme.Blue
 import info.fekri.dunibazaar.ui.theme.MainAppTheme
@@ -229,7 +235,8 @@ fun ProductComments(comments: List<Comment>, AddNewComment: (String) -> Unit) {
                 if (NetworkChecker(context).isInternetConnected) {
                     showCommentDialog.value = true
                 } else {
-                    Toast.makeText(context, "Please, Connect to Internet!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Please, Connect to Internet!", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         ) {
@@ -241,6 +248,125 @@ fun ProductComments(comments: List<Comment>, AddNewComment: (String) -> Unit) {
 
     }
 
+    if (showCommentDialog.value) {
+        // show dialog
+        AddNewCommentDialog(
+            OnDismiss = { showCommentDialog.value = false },
+            OnPositiveClick = {
+                AddNewComment.invoke(it)
+            }
+        )
+    }
+
+}
+
+@Composable
+fun AddNewCommentDialog(
+    OnDismiss: () -> Unit,
+    OnPositiveClick: (String) -> Unit
+) {
+
+    val context = LocalContext.current
+    val userComment = remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = OnDismiss) {
+
+        Card(
+            modifier = Modifier.fillMaxHeight(0.6f),
+            elevation = 8.dp,
+            shape = Shapes.medium
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Text(
+                    text = "Write Your Comment",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // get data from user -->
+                MainTextField(
+                    edtValue = userComment.value,
+                    hint = "Your comment...",
+                ) {
+                    userComment.value = it
+                }
+
+                // buttons -->
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    TextButton(onClick = { OnDismiss.invoke() }) {
+                        Text(text = "Cancel")
+                    }
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    TextButton(
+                        onClick = {
+                            if (userComment.value.isNotEmpty() && userComment.value.isNotBlank()) {
+
+                                if (NetworkChecker(context).isInternetConnected) {
+
+                                    OnPositiveClick.invoke(userComment.value)
+                                    OnDismiss.invoke()
+
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Please, connect to Internet!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Please, write your Comment!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    ) {
+                        Text(text = "Ok")
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+@Composable
+fun MainTextField(edtValue: String, hint: String, OnValueChanges: (String) -> Unit) {
+    OutlinedTextField(
+        value = edtValue,
+        onValueChange = OnValueChanges,
+        modifier = Modifier.fillMaxWidth(0.9f),
+        shape = Shapes.medium,
+        placeholder = { Text(text = "Write your comment...") },
+        maxLines = 2,
+        singleLine = false
+    )
 }
 
 @Composable
