@@ -1,6 +1,7 @@
 package info.fekri.dunibazaar.util
 
 import info.fekri.dunibazaar.R
+import info.fekri.dunibazaar.model.data.Product
 
 const val KEY_PRODUCT_ARG = "productId"
 const val KEY_CATEGORY_ARG = "categoryName"
@@ -27,3 +28,5 @@ val TAGS = listOf<String>(
     "Most Visited",
     "Highest Quality"
 )
+
+val EMPTY_PRODUCT = Product("", "", "", "", "", "", "", "", "")

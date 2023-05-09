@@ -42,4 +42,8 @@ class ProductRepositoryImpl(
         return productDao.getAllByCategory(category)
     }
 
+    override suspend fun getProductById(productId: String): Product {
+        return productDao.getProductById(productId)
+    }
+
 }
