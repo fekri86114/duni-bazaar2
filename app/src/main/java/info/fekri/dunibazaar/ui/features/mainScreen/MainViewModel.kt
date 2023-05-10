@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import info.fekri.dunibazaar.model.data.Ads
 import info.fekri.dunibazaar.model.data.Product
+import info.fekri.dunibazaar.model.repository.cart.CartRepository
 import info.fekri.dunibazaar.model.repository.product.ProductRepository
 import info.fekri.dunibazaar.util.coroutineExceptionHandler
 import kotlinx.coroutines.async
@@ -14,18 +15,21 @@ import okhttp3.internal.wait
 
 class MainViewModel(
     private val productRepository: ProductRepository,
+    private val cartRepository: CartRepository,
     isInternetConnected: Boolean
 ): ViewModel() {
     val dataProducts = mutableStateOf<List<Product>>(listOf())
     val dataAds = mutableStateOf<List<Ads>>(listOf())
     val showProgress = mutableStateOf(false)
+    val badgeNumber = mutableStateOf(0)
 
     // get data from server and update when created
     // an instance from MainViewModel
     init { refreshAllDataFromNet(isInternetConnected) }
 
-    private fun refreshAllDataFromNet(isInternetConnected: Boolean) {
 
+
+    private fun refreshAllDataFromNet(isInternetConnected: Boolean) {
         viewModelScope.launch(coroutineExceptionHandler) {
 
             if (isInternetConnected) {
@@ -43,12 +47,17 @@ class MainViewModel(
             }
 
         }
-
     }
 
     private fun updateData(products: List<Product>, ads: List<Ads>) {
         dataProducts.value = products
         dataAds.value = ads
+    }
+
+    fun loadBadgeNumber() {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            badgeNumber.value = cartRepository.getCartSize()
+        }
     }
 
 }

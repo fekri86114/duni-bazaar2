@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Badge
+import androidx.compose.material.BadgedBox
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -81,6 +83,9 @@ fun MainScreen() {
     val viewModel = getNavViewModel<MainViewModel>(
         parameters = { parametersOf(NetworkChecker(context).isInternetConnected) }
     )
+    if (NetworkChecker(context).isInternetConnected) {
+        viewModel.loadBadgeNumber()
+    }
 
     val navigation = getNavController()
 
@@ -99,6 +104,7 @@ fun MainScreen() {
         }
 
         TopToolbar(
+            badgeNumber = viewModel.badgeNumber.value,
             onCartClicked = {
                 navigation.navigate(MyScreens.CartScreen.route)
             },
@@ -149,7 +155,7 @@ fun ProductSubjectList(tags: List<String>, products: List<Product>, ads: List<Ad
 // ----------------------------------------------------------------------
 
 @Composable
-fun TopToolbar(onCartClicked: () -> Unit, onProfileClicked: () -> Unit) {
+fun TopToolbar(badgeNumber: Int, onCartClicked: () -> Unit, onProfileClicked: () -> Unit) {
 
     TopAppBar(
         elevation = 0.dp,
@@ -157,8 +163,16 @@ fun TopToolbar(onCartClicked: () -> Unit, onProfileClicked: () -> Unit) {
         title = { Text(text = "Duni Bazaar") },
         actions = {
 
-            IconButton(onClick = onCartClicked) {
-                Icon(Icons.Default.ShoppingCart, null)
+            IconButton(
+                onClick = { onCartClicked.invoke() }
+            ) {
+                if (badgeNumber == 0) {
+                    Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = null)
+                } else {
+                    BadgedBox(badge = { Badge { Text(text = badgeNumber.toString()) } }) {
+                        Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = null)
+                    }
+                }
             }
 
             IconButton(onClick = { onProfileClicked.invoke() }) {

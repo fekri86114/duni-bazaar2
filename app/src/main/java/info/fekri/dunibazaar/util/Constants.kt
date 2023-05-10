@@ -29,4 +29,4 @@ val TAGS = listOf<String>(
     "Highest Quality"
 )
 
-val EMPTY_PRODUCT = Product("", "", "", "", "", "", "", "", "")
+val EMPTY_PRODUCT = Product("", "", "", "", "", "", "", "", "", "")

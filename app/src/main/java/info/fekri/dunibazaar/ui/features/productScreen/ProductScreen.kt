@@ -107,7 +107,7 @@ fun ProductScreen(productId: String) {
 
             ProductToolbar(
                 productName = "Details",
-                badgeNumber = 4,
+                badgeNumber = viewModel.badgeNumber.value,
                 OnBackClicked = {
                     navigation.popBackStack()
                 },

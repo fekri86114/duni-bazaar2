@@ -7,6 +7,7 @@ import info.fekri.dunibazaar.model.data.CartResponse
 import info.fekri.dunibazaar.model.data.CommentResponse
 import info.fekri.dunibazaar.model.data.LoginResponse
 import info.fekri.dunibazaar.model.data.ProductResponse
+import info.fekri.dunibazaar.model.data.UserCartInfo
 import info.fekri.dunibazaar.model.repository.TokenInMemory
 import info.fekri.dunibazaar.util.BASE_URL
 import okhttp3.OkHttpClient
@@ -42,6 +43,9 @@ interface ApiService {
 
     @POST("addToCart")
     suspend fun addProductToCart(@Body jsonObject: JsonObject): CartResponse
+
+    @GET("getUserCart")
+    suspend fun getUserCart(): UserCartInfo
 
 }
 

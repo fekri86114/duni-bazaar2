@@ -20,10 +20,17 @@ class ProductViewModel(
     val thisProduct = mutableStateOf(EMPTY_PRODUCT)
     val comments = mutableStateOf(listOf<Comment>())
     val isAddingProduct = mutableStateOf(false)
+    val badgeNumber = mutableStateOf(0)
 
     private fun loadProductFromCache(productId: String) {
         viewModelScope.launch(coroutineExceptionHandler) {
             thisProduct.value = productRepository.getProductById(productId)
+        }
+    }
+
+    private fun loadBadgeNumber() {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            badgeNumber.value = cartRepository.getCartSize()
         }
     }
 
@@ -32,6 +39,7 @@ class ProductViewModel(
 
         if (isInternetConnected) {
             loadAllComments(productId)
+            loadBadgeNumber()
         }
     }
 
