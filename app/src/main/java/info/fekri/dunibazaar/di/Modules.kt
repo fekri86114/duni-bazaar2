@@ -15,6 +15,7 @@ import info.fekri.dunibazaar.model.repository.user.UserRepositoryImpl
 import info.fekri.dunibazaar.ui.features.categoryScreen.CategoryViewModel
 import info.fekri.dunibazaar.ui.features.mainScreen.MainViewModel
 import info.fekri.dunibazaar.ui.features.productScreen.ProductViewModel
+import info.fekri.dunibazaar.ui.features.profileScreen.ProfileViewModel
 import info.fekri.dunibazaar.ui.features.signIn.SignInViewModel
 import info.fekri.dunibazaar.ui.features.signUp.SignUpViewModel
 import org.koin.android.ext.koin.androidContext
@@ -43,4 +44,5 @@ val myModules = module {
     viewModel { (isNetConnected: Boolean) -> MainViewModel(get(), get(), isNetConnected) }
     viewModel { CategoryViewModel(get()) }
     viewModel { ProductViewModel(get(), get(), get()) }
+    viewModel { ProfileViewModel(get()) }
 }

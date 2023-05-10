@@ -23,6 +23,7 @@ import info.fekri.dunibazaar.ui.features.IntroScreen
 import info.fekri.dunibazaar.ui.features.categoryScreen.CategoryScreen
 import info.fekri.dunibazaar.ui.features.mainScreen.MainScreen
 import info.fekri.dunibazaar.ui.features.productScreen.ProductScreen
+import info.fekri.dunibazaar.ui.features.profileScreen.ProfileScreen
 import info.fekri.dunibazaar.ui.features.signIn.SignInScreen
 import info.fekri.dunibazaar.ui.features.signUp.SignUpScreen
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
@@ -60,7 +61,7 @@ class MainActivity : ComponentActivity() {
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun MainPreview() {
     MainAppTheme {
         Surface(
             color = BackgroundMain,
@@ -130,10 +131,7 @@ fun CartScreen() {
 
 }
 
-@Composable
-fun ProfileScreen() {
 
-}
 
 
 
