@@ -3,6 +3,7 @@ package info.fekri.dunibazaar.ui.features.categoryScreen
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -139,7 +140,7 @@ fun CategoryItem(data: Product, onProductItemClicked: (String) -> Unit) {
 @Composable
 fun CategoryList(data: List<Product>, onProductItemClicked: (String) -> Unit) {
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 16.dp)) {
         items(data.size) {
             CategoryItem(data = data[it], onProductItemClicked = onProductItemClicked)
         }

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import info.fekri.dunibazaar.model.db.AppDatabase
 import info.fekri.dunibazaar.model.net.createApiService
+import info.fekri.dunibazaar.model.repository.cart.CartRepository
+import info.fekri.dunibazaar.model.repository.cart.CartRepositoryImpl
 import info.fekri.dunibazaar.model.repository.comment.CommentRepository
 import info.fekri.dunibazaar.model.repository.comment.CommentRepositoryImpl
 import info.fekri.dunibazaar.model.repository.product.ProductRepository
@@ -34,10 +36,11 @@ val myModules = module {
     single<UserRepository> { UserRepositoryImpl(get(), get()) }
     single<ProductRepository> { ProductRepositoryImpl(get(), get<AppDatabase>().productDao()) }
     single<CommentRepository> { CommentRepositoryImpl(get()) }
+    single<CartRepository> { CartRepositoryImpl(get()) }
 
     viewModel { SignUpViewModel(get()) }
     viewModel { SignInViewModel(get()) }
     viewModel { (isNetConnected: Boolean) -> MainViewModel(get(), isNetConnected) }
     viewModel { CategoryViewModel(get()) }
-    viewModel { ProductViewModel(get(), get()) }
+    viewModel { ProductViewModel(get(), get(), get()) }
 }
