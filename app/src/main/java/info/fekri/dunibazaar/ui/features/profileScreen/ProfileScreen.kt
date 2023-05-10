@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,9 +25,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
+import info.fekri.dunibazaar.R
 import info.fekri.dunibazaar.ui.DuniBazaarUi
 import info.fekri.dunibazaar.ui.features.mainScreen.TopToolbar
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
@@ -62,16 +69,33 @@ fun ProfileScreen() {
         ) {
 
             ProfileToolbar() {
-
+                navigation.popBackStack()
             }
 
-//            MainAnimation()
+            MainAnimation()
 //
-//            showDataSection()
+//            ShowDataSection()
 
         }
 
     }
+
+}
+
+@Composable
+fun MainAnimation() {
+
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.profile_anim)
+    )
+
+    LottieAnimation(
+        modifier = Modifier
+            .size(270.dp)
+            .padding(top = 36.dp, bottom = 16.dp),
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
 
 }
 
