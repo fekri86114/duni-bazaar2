@@ -44,11 +44,8 @@ import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
-import info.fekri.dunibazaar.R
 import info.fekri.dunibazaar.model.data.Ads
 import info.fekri.dunibazaar.model.data.Product
-import info.fekri.dunibazaar.model.repository.product.ProductRepository
-import info.fekri.dunibazaar.model.repository.product.ProductRepositoryImpl
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
 import info.fekri.dunibazaar.ui.theme.Blue
 import info.fekri.dunibazaar.ui.theme.CardViewBackground
@@ -58,6 +55,7 @@ import info.fekri.dunibazaar.util.CATEGORY
 import info.fekri.dunibazaar.util.MyScreens
 import info.fekri.dunibazaar.util.NetworkChecker
 import info.fekri.dunibazaar.util.TAGS
+import info.fekri.dunibazaar.util.stylePrice
 import org.koin.core.parameter.parametersOf
 
 @Preview(showBackground = true)
@@ -65,8 +63,7 @@ import org.koin.core.parameter.parametersOf
 fun MainScreenPreview() {
     MainAppTheme {
         Surface(
-            color = BackgroundMain,
-            modifier = Modifier.fillMaxSize()
+            color = BackgroundMain, modifier = Modifier.fillMaxSize()
         ) {
             MainScreen()
         }
@@ -80,9 +77,8 @@ fun MainScreen() {
     val uiController = rememberSystemUiController()
     SideEffect { uiController.setStatusBarColor(Color.White) }
 
-    val viewModel = getNavViewModel<MainViewModel>(
-        parameters = { parametersOf(NetworkChecker(context).isInternetConnected) }
-    )
+    val viewModel =
+        getNavViewModel<MainViewModel>(parameters = { parametersOf(NetworkChecker(context).isInternetConnected) })
     if (NetworkChecker(context).isInternetConnected) {
         viewModel.loadBadgeNumber()
     }
@@ -98,20 +94,18 @@ fun MainScreen() {
 
         if (viewModel.showProgress.value) {
             LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                color = Blue
+                modifier = Modifier.fillMaxWidth(), color = Blue
             )
         }
 
-        TopToolbar(
-            badgeNumber = viewModel.badgeNumber.value,
-            onCartClicked = {
-                navigation.navigate(MyScreens.CartScreen.route)
-            },
-            onProfileClicked = {
-                navigation.navigate(MyScreens.ProfileScreen.route)
-            }
-        )
+        TopToolbar(badgeNumber = viewModel.badgeNumber.value, onCartClicked = {
+            if (NetworkChecker(context).isInternetConnected) navigation.navigate(MyScreens.CartScreen.route)
+            else Toast.makeText(
+                context, "Please, check your Internet Connection!", Toast.LENGTH_SHORT
+            ).show()
+        }, onProfileClicked = {
+            navigation.navigate(MyScreens.ProfileScreen.route)
+        })
 
         CategoryBar(CATEGORY) {
             navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
@@ -130,7 +124,12 @@ fun MainScreen() {
 // -----------------------------------------------------------------------
 
 @Composable
-fun ProductSubjectList(tags: List<String>, products: List<Product>, ads: List<Ads>, onProductItemCLicked: (String) -> Unit) {
+fun ProductSubjectList(
+    tags: List<String>,
+    products: List<Product>,
+    ads: List<Ads>,
+    onProductItemCLicked: (String) -> Unit
+) {
 
     if (products.isNotEmpty()) {
 
@@ -140,9 +139,10 @@ fun ProductSubjectList(tags: List<String>, products: List<Product>, ads: List<Ad
                 val withTagData = products.filter { product -> product.tags == tags[it] }
                 ProductSubject(tags[it], withTagData.shuffled(), onProductItemCLicked)
 
-                if (ads.size >= 2)
-                    if (it == 1 || it == 2)
-                        BigPictureAds(ads[it - 1], onProductItemCLicked)
+                if (ads.size >= 2) if (it == 1 || it == 2) BigPictureAds(
+                    ads[it - 1],
+                    onProductItemCLicked
+                )
 
             }
 
@@ -157,15 +157,12 @@ fun ProductSubjectList(tags: List<String>, products: List<Product>, ads: List<Ad
 @Composable
 fun TopToolbar(badgeNumber: Int, onCartClicked: () -> Unit, onProfileClicked: () -> Unit) {
 
-    TopAppBar(
-        elevation = 0.dp,
+    TopAppBar(elevation = 0.dp,
         backgroundColor = Color.White,
         title = { Text(text = "Duni Bazaar") },
         actions = {
 
-            IconButton(
-                onClick = { onCartClicked.invoke() }
-            ) {
+            IconButton(onClick = { onCartClicked.invoke() }) {
                 if (badgeNumber == 0) {
                     Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = null)
                 } else {
@@ -179,8 +176,7 @@ fun TopToolbar(badgeNumber: Int, onCartClicked: () -> Unit, onProfileClicked: ()
                 Icon(Icons.Default.Person, null)
             }
 
-        }
-    )
+        })
 
 }
 
@@ -190,8 +186,7 @@ fun TopToolbar(badgeNumber: Int, onCartClicked: () -> Unit, onProfileClicked: ()
 fun CategoryBar(categoryList: List<Pair<String, Int>>, onCategoryClicked: (String) -> Unit) {
 
     LazyRow(
-        modifier = Modifier.padding(top = 16.dp),
-        contentPadding = PaddingValues(end = 16.dp)
+        modifier = Modifier.padding(top = 16.dp), contentPadding = PaddingValues(end = 16.dp)
     ) {
         items(categoryList.size) {
             CategoryItem(categoryList[it], onCategoryClicked)
@@ -209,8 +204,7 @@ fun CategoryItem(subject: Pair<String, Int>, onCategoryClicked: (String) -> Unit
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Surface(
-            shape = Shapes.medium,
-            color = CardViewBackground
+            shape = Shapes.medium, color = CardViewBackground
         ) {
             Image(
                 painter = painterResource(id = subject.second),
@@ -246,8 +240,7 @@ fun ProductSubject(subject: String, data: List<Product>, onProductItemCLicked: (
 fun ProductBar(data: List<Product>, onProductItemCLicked: (String) -> Unit) {
 
     LazyRow(
-        modifier = Modifier.padding(top = 16.dp),
-        contentPadding = PaddingValues(end = 16.dp)
+        modifier = Modifier.padding(top = 16.dp), contentPadding = PaddingValues(end = 16.dp)
     ) {
         items(data.size) {
             ProductItem(data[it], onProductItemCLicked)
@@ -279,7 +272,7 @@ fun ProductItem(product: Product, onProductItemCLicked: (String) -> Unit) {
                     style = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 )
                 Text(
-                    text = "${product.price} Tomans",
+                    text = stylePrice(product.price),
                     style = TextStyle(fontSize = 14.sp),
                     modifier = Modifier.padding(top = 4.dp)
                 )
@@ -298,8 +291,7 @@ fun ProductItem(product: Product, onProductItemCLicked: (String) -> Unit) {
 @Composable
 fun BigPictureAds(ads: Ads, onProductItemCLicked: (String) -> Unit) {
 
-    AsyncImage(
-        model = ads.imageUrl,
+    AsyncImage(model = ads.imageUrl,
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = Modifier
@@ -307,8 +299,7 @@ fun BigPictureAds(ads: Ads, onProductItemCLicked: (String) -> Unit) {
             .height(260.dp)
             .padding(top = 22.dp, start = 16.dp, end = 16.dp)
             .clip(Shapes.medium)
-            .clickable { onProductItemCLicked.invoke(ads.productId) }
-    )
+            .clickable { onProductItemCLicked.invoke(ads.productId) })
 
 }
 

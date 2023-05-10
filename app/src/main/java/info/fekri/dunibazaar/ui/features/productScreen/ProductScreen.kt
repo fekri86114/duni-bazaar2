@@ -73,6 +73,7 @@ import info.fekri.dunibazaar.ui.theme.PriceBackground
 import info.fekri.dunibazaar.ui.theme.Shapes
 import info.fekri.dunibazaar.util.MyScreens
 import info.fekri.dunibazaar.util.NetworkChecker
+import info.fekri.dunibazaar.util.stylePrice
 
 @Preview(showBackground = true)
 @Composable
@@ -124,9 +125,11 @@ fun ProductScreen(productId: String) {
                 }
             )
 
+            val comment =
+                if (NetworkChecker(context).isInternetConnected) viewModel.comments.value else listOf()
             ProductItem(
                 data = viewModel.thisProduct.value,
-                comments = viewModel.comments.value,
+                comments = comment,
                 OnCategoryClicked = {
                     navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
                 },
@@ -406,6 +409,8 @@ fun MainTextField(edtValue: String, hint: String, OnValueChanges: (String) -> Un
 @Composable
 fun ProductDetail(data: Product, commentNumber: String) {
 
+    val context = LocalContext.current
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -421,8 +426,9 @@ fun ProductDetail(data: Product, commentNumber: String) {
                     modifier = Modifier.size(26.dp)
                 )
 
+                val commentText = if (NetworkChecker(context).isInternetConnected) "$commentNumber Comments" else "No Internet!"
                 Text(
-                    text = "$commentNumber Comments",
+                    text = commentText,
                     modifier = Modifier.padding(start = 6.dp),
                     fontSize = 13.sp
                 )
@@ -476,7 +482,8 @@ fun ProductDetail(data: Product, commentNumber: String) {
             color = Blue
         ) {
             Text(
-                text = data.tags, color = Color.White,
+                text = data.tags,
+                color = Color.White,
                 modifier = Modifier.padding(6.dp),
                 style = TextStyle(
                     fontSize = 13.sp,
@@ -580,7 +587,8 @@ fun AddToCart(
 ) {
 
     val configuration = LocalConfiguration.current
-    val fraction = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 0.15f else 0.08f
+    val fraction =
+        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 0.15f else 0.08f
 
     Surface(
         color = Color.White, modifier = Modifier
@@ -621,7 +629,7 @@ fun AddToCart(
                 color = PriceBackground
             ) {
                 Text(
-                    text = "$price Toomans",
+                    text = stylePrice(price),
                     style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium),
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 6.dp)
                 )
