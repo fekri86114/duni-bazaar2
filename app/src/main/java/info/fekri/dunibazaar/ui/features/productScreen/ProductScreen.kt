@@ -1,5 +1,5 @@
 package info.fekri.dunibazaar.ui.features.productScreen
-
+//413
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -32,7 +32,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -50,13 +49,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.dunibazaar.R
 import info.fekri.dunibazaar.model.data.Comment
 import info.fekri.dunibazaar.model.data.Product
-import info.fekri.dunibazaar.ui.features.signUp.MainTextField
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
 import info.fekri.dunibazaar.ui.theme.Blue
 import info.fekri.dunibazaar.ui.theme.MainAppTheme
@@ -119,19 +116,45 @@ fun ProductScreen(productId: String) {
                 comments = viewModel.comments.value,
                 OnCategoryClicked = {
                     navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
+                },
+                OnAddNewComment = {
+
+                    viewModel.addNewComment(productId, it) { message ->
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             )
 
         }
 
-        AddToCart()
+        AddToCart(viewModel.thisProduct.value.price, viewModel.isAddingProduct.value) {
+            if (NetworkChecker(context).isInternetConnected) {
+
+                viewModel.addProductToCart(productId) {
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                }
+
+            } else {
+                Toast.makeText(
+                    context,
+                    "Please, check your Internet Connection!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
 
     }
 
 }
 
 @Composable
-fun ProductItem(data: Product, comments: List<Comment>, OnCategoryClicked: (String) -> Unit) {
+fun ProductItem(
+    data: Product,
+    comments: List<Comment>,
+    OnCategoryClicked: (String) -> Unit,
+    OnAddNewComment: (String) -> Unit
+) {
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -152,10 +175,7 @@ fun ProductItem(data: Product, comments: List<Comment>, OnCategoryClicked: (Stri
             modifier = Modifier.padding(top = 14.dp, bottom = 4.dp)
         )
 
-        ProductComments(comments) {
-
-
-        }
+        ProductComments(comments, OnAddNewComment)
 
     }
 }
@@ -272,7 +292,7 @@ fun AddNewCommentDialog(
     Dialog(onDismissRequest = OnDismiss) {
 
         Card(
-            modifier = Modifier.fillMaxHeight(0.6f),
+            modifier = Modifier.fillMaxHeight(0.5f),
             elevation = 8.dp,
             shape = Shapes.medium
         ) {
@@ -365,7 +385,8 @@ fun MainTextField(edtValue: String, hint: String, OnValueChanges: (String) -> Un
         shape = Shapes.medium,
         placeholder = { Text(text = "Write your comment...") },
         maxLines = 2,
-        singleLine = false
+        singleLine = false,
+        label = { Text(text = hint) }
     )
 }
 
@@ -539,5 +560,11 @@ fun ProductToolbar(
 }
 
 @Composable
-fun AddToCart() {
+fun AddToCart(
+    price: String,
+    isAddingProduct: Boolean,
+    OnCartClicked: () -> Unit
+) {
+
+
 }

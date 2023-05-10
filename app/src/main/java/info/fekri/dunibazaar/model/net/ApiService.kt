@@ -1,7 +1,9 @@
 package info.fekri.dunibazaar.model.net
 
 import com.google.gson.JsonObject
+import info.fekri.dunibazaar.model.data.AddNewCommentResponse
 import info.fekri.dunibazaar.model.data.AdsResponse
+import info.fekri.dunibazaar.model.data.CartResponse
 import info.fekri.dunibazaar.model.data.CommentResponse
 import info.fekri.dunibazaar.model.data.LoginResponse
 import info.fekri.dunibazaar.model.data.ProductResponse
@@ -35,11 +37,18 @@ interface ApiService {
     @POST("getComments")
     suspend fun getAllComments(@Body jsonObject: JsonObject): CommentResponse
 
+    @POST("addNewComment")
+    suspend fun addNewComment(@Body jsonObject: JsonObject): AddNewCommentResponse
+
+    @POST("addToCart")
+    suspend fun addProductToCart(@Body jsonObject: JsonObject): CartResponse
+
 }
 
 fun createApiService(): ApiService {
 
-    val okHttpClient = OkHttpClient.Builder()
+    val okHttpClient = OkHttpClient
+        .Builder()
         .addInterceptor {
 
             val oldRequest = it.request()
