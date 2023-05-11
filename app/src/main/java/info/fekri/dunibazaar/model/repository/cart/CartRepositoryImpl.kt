@@ -1,6 +1,7 @@
 package info.fekri.dunibazaar.model.repository.cart
 
 import com.google.gson.JsonObject
+import info.fekri.dunibazaar.model.data.UserCartInfo
 import info.fekri.dunibazaar.model.net.ApiService
 
 class CartRepositoryImpl(
@@ -12,6 +13,13 @@ class CartRepositoryImpl(
             addProperty("productId", productId)
         }
         return apiService.addProductToCart(jsonObject).success
+    }
+
+    override suspend fun removeFromCart(productId: String): Boolean {
+        val jsonObject = JsonObject().apply {
+            addProperty("productId", productId)
+        }
+        return apiService.removeFromCart(jsonObject).success
     }
 
     override suspend fun getCartSize(): Int {
@@ -27,6 +35,10 @@ class CartRepositoryImpl(
         }
 
         return 0
+    }
+
+    override suspend fun getUserCartInfo(): UserCartInfo {
+        return apiService.getUserCart()
     }
 
 }

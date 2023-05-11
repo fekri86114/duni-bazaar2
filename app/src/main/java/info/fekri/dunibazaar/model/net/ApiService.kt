@@ -9,6 +9,7 @@ import info.fekri.dunibazaar.model.data.LoginResponse
 import info.fekri.dunibazaar.model.data.ProductResponse
 import info.fekri.dunibazaar.model.data.UserCartInfo
 import info.fekri.dunibazaar.model.repository.TokenInMemory
+import info.fekri.dunibazaar.model.repository.cart.CartRepository
 import info.fekri.dunibazaar.util.BASE_URL
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -46,6 +47,9 @@ interface ApiService {
 
     @GET("getUserCart")
     suspend fun getUserCart(): UserCartInfo
+
+    @POST("removeFromCart")
+    suspend fun removeFromCart(@Body jsonObject: JsonObject): CartResponse
 
 }
 
