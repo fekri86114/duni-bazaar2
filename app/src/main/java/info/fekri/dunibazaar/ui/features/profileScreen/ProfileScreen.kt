@@ -17,11 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
-import androidx.compose.material.Colors
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -96,18 +94,24 @@ fun ProfileScreen() {
             }
 
             MainAnimation()
-            
+
             Spacer(modifier = Modifier.padding(top = 6.dp))
 
             ShowDataSection("Email Address", viewModel.email.value, null)
-            ShowDataSection("Address", viewModel.address.value) { viewModel.showLocationDialog.value = true }
-            ShowDataSection("Postal Code", viewModel.postalCode.value) { viewModel.showLocationDialog.value = true }
+            ShowDataSection(
+                "Address",
+                viewModel.address.value
+            ) { viewModel.showLocationDialog.value = true }
+            ShowDataSection(
+                "Postal Code",
+                viewModel.postalCode.value
+            ) { viewModel.showLocationDialog.value = true }
             ShowDataSection("Login Time", styleTime(viewModel.loginTime.value.toLong()), null)
 
             Button(
                 onClick = {
-                    Toast.makeText(context, "Hope to see you again :-*", Toast.LENGTH_SHORT).show()
-                    viewModel.signOut() // signed out
+                    Toast.makeText(context, "Hope to see you soon :-*", Toast.LENGTH_SHORT).show()
+                    viewModel.signOut() // sign out user
                     navigation.navigate(MyScreens.MainScreen.route) {
                         popUpTo(MyScreens.MainScreen.route) {
                             inclusive = true
@@ -128,16 +132,16 @@ fun ProfileScreen() {
             }
 
         }
-        
-       if (viewModel.showLocationDialog.value) {
-           AddUserLocationDataDialog(
-               showSaveLocation = false,
-               onDismiss = { viewModel.showLocationDialog.value = false },
-               onSubmitClicked = { address, postalCode, _ ->
-                   viewModel.setUserLocation(address, postalCode)
-               }
-           )
-       }
+
+        if (viewModel.showLocationDialog.value) {
+            AddUserLocationDataDialog(
+                showSaveLocation = false,
+                onDismiss = { viewModel.showLocationDialog.value = false },
+                onSubmitClicked = { address, postalCode, _ ->
+                    viewModel.setUserLocation(address, postalCode)
+                }
+            )
+        }
 
     }
 
@@ -252,7 +256,7 @@ fun AddUserLocationDataDialog(
 @Composable
 fun ShowDataSection(
     subject: String,
-    text : String,
+    text: String,
     onLocationClicked: (() -> Unit)?
 ) {
 

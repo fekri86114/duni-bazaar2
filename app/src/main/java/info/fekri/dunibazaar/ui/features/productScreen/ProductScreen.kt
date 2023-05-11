@@ -75,16 +75,6 @@ import info.fekri.dunibazaar.util.MyScreens
 import info.fekri.dunibazaar.util.NetworkChecker
 import info.fekri.dunibazaar.util.stylePrice
 
-@Preview(showBackground = true)
-@Composable
-fun ProductScreenPreview() {
-    MainAppTheme {
-        Surface(modifier = Modifier.fillMaxSize(), color = BackgroundMain) {
-            // ProductScreen()
-        }
-    }
-}
-
 @Composable
 fun ProductScreen(productId: String) {
     val context = LocalContext.current

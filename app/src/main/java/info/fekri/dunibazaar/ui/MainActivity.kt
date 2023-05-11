@@ -20,6 +20,7 @@ import info.fekri.dunibazaar.di.myModules
 import info.fekri.dunibazaar.model.repository.TokenInMemory
 import info.fekri.dunibazaar.model.repository.user.UserRepository
 import info.fekri.dunibazaar.ui.features.IntroScreen
+import info.fekri.dunibazaar.ui.features.cartScreen.CartScreen
 import info.fekri.dunibazaar.ui.features.categoryScreen.CategoryScreen
 import info.fekri.dunibazaar.ui.features.mainScreen.MainScreen
 import info.fekri.dunibazaar.ui.features.productScreen.ProductScreen
@@ -124,14 +125,3 @@ fun DuniBazaarUi() {
     }
 
 }
-
-
-@Composable
-fun CartScreen() {
-
-}
-
-
-
-
-
