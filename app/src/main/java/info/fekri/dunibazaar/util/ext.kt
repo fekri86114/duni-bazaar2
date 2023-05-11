@@ -1,7 +1,10 @@
 package info.fekri.dunibazaar.util
 
+import android.annotation.SuppressLint
 import android.util.Log
 import kotlinx.coroutines.CoroutineExceptionHandler
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
     Log.v("error", "Error -> ${throwable.message}")
@@ -31,4 +34,15 @@ fun stylePrice(oldPrice: String): String {
     }
 
     return "$oldPrice Tomans"
+}
+
+@SuppressLint("SimpleDateFormat")
+fun styleTime(timeInMillis: Long): String {
+
+    val dateFormatter = SimpleDateFormat("yyyy/MM/dd-hh:mm")
+
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = timeInMillis
+
+    return dateFormatter.format(calendar.time)
 }

@@ -12,6 +12,8 @@ class ProfileViewModel(
     val postalCode = mutableStateOf("")
     val loginTime = mutableStateOf("")
 
+    val showLocationDialog = mutableStateOf(false)
+
     fun loadUserData() {
         email.value = userRepository.getUserName()!!
         loginTime.value = userRepository.getUserLoginTime()
@@ -19,6 +21,14 @@ class ProfileViewModel(
         val location = userRepository.getUserLocation()
         address.value = location.first
         postalCode.value = location.second
+    }
+
+    fun signOut() {
+        userRepository.signOut()
+    }
+
+    fun setUserLocation(address: String, postalCode: String) {
+        userRepository.saveUserLocation(address, postalCode)
     }
 
 }
