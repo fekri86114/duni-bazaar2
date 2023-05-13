@@ -4,9 +4,11 @@ import com.google.gson.JsonObject
 import info.fekri.dunibazaar.model.data.AddNewCommentResponse
 import info.fekri.dunibazaar.model.data.AdsResponse
 import info.fekri.dunibazaar.model.data.CartResponse
+import info.fekri.dunibazaar.model.data.Checkout
 import info.fekri.dunibazaar.model.data.CommentResponse
 import info.fekri.dunibazaar.model.data.LoginResponse
 import info.fekri.dunibazaar.model.data.ProductResponse
+import info.fekri.dunibazaar.model.data.SubmitOrder
 import info.fekri.dunibazaar.model.data.UserCartInfo
 import info.fekri.dunibazaar.model.repository.TokenInMemory
 import info.fekri.dunibazaar.model.repository.cart.CartRepository
@@ -50,6 +52,12 @@ interface ApiService {
 
     @POST("removeFromCart")
     suspend fun removeFromCart(@Body jsonObject: JsonObject): CartResponse
+
+    @POST("submitOrder")
+    suspend fun submitOrder(@Body jsonObject: JsonObject): SubmitOrder
+
+    @POST("checkout")
+    suspend fun checkout(@Body jsonObject: JsonObject): Checkout
 
 }
 

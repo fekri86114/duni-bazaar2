@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import info.fekri.dunibazaar.model.data.Ads
+import info.fekri.dunibazaar.model.data.Checkout
 import info.fekri.dunibazaar.model.data.Product
 import info.fekri.dunibazaar.model.repository.cart.CartRepository
 import info.fekri.dunibazaar.model.repository.product.ProductRepository
@@ -17,17 +18,37 @@ class MainViewModel(
     private val productRepository: ProductRepository,
     private val cartRepository: CartRepository,
     isInternetConnected: Boolean
-): ViewModel() {
+) : ViewModel() {
     val dataProducts = mutableStateOf<List<Product>>(listOf())
     val dataAds = mutableStateOf<List<Ads>>(listOf())
     val showProgress = mutableStateOf(false)
     val badgeNumber = mutableStateOf(0)
+    val showPaymentResultDialog = mutableStateOf(false)
+    val checkoutData = mutableStateOf(Checkout(null, null))
 
     // get data from server and update when created
     // an instance from MainViewModel
-    init { refreshAllDataFromNet(isInternetConnected) }
+    init {
+        refreshAllDataFromNet(isInternetConnected)
+    }
 
+    fun getCheckoutData() {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            val result = cartRepository.checkout(cartRepository.getOrderId())
+            if (result.success!!) {
+                checkoutData.value = result
+                showPaymentResultDialog.value = true
+            }
+        }
+    }
 
+    fun getPaymentStatus(): Int {
+        return cartRepository.getPurchaseStatus()
+    }
+
+    fun setPaymentStatus(status: Int) {
+        cartRepository.setPurchaseStatus(status)
+    }
 
     private fun refreshAllDataFromNet(isInternetConnected: Boolean) {
         viewModelScope.launch(coroutineExceptionHandler) {
@@ -38,7 +59,8 @@ class MainViewModel(
                 // this is for test!
                 delay(1200)
 
-                val newDataProducts = async { productRepository.getAllProducts(isInternetConnected) }
+                val newDataProducts =
+                    async { productRepository.getAllProducts(isInternetConnected) }
                 val newDataAds = async { productRepository.getAllAds(isInternetConnected) }
 
                 updateData(newDataProducts.await(), newDataAds.await())

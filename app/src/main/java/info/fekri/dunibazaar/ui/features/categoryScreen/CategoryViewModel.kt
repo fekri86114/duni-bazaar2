@@ -13,12 +13,10 @@ class CategoryViewModel(
     val dataProducts = mutableStateOf<List<Product>>(listOf())
 
     fun loadDataByCategory(category: String) {
-
         viewModelScope.launch {
             val dataFromLocal = productRepository.getAllProductsByCategory(category)
             dataProducts.value = dataFromLocal
         }
-
     }
 
 }

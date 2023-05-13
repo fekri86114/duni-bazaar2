@@ -3,8 +3,12 @@ package info.fekri.dunibazaar.ui.features.mainScreen
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +26,7 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -37,14 +42,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
+import info.fekri.dunibazaar.R
 import info.fekri.dunibazaar.model.data.Ads
+import info.fekri.dunibazaar.model.data.Checkout
 import info.fekri.dunibazaar.model.data.Product
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
 import info.fekri.dunibazaar.ui.theme.Blue
@@ -53,7 +62,10 @@ import info.fekri.dunibazaar.ui.theme.MainAppTheme
 import info.fekri.dunibazaar.ui.theme.Shapes
 import info.fekri.dunibazaar.util.CATEGORY
 import info.fekri.dunibazaar.util.MyScreens
+import info.fekri.dunibazaar.util.NO_PAYMENT
 import info.fekri.dunibazaar.util.NetworkChecker
+import info.fekri.dunibazaar.util.PAYMENT_PENDING
+import info.fekri.dunibazaar.util.PAYMENT_SUCCESS
 import info.fekri.dunibazaar.util.TAGS
 import info.fekri.dunibazaar.util.stylePrice
 import org.koin.core.parameter.parametersOf
@@ -83,42 +95,156 @@ fun MainScreen() {
         viewModel.loadBadgeNumber()
     }
 
+    if (viewModel.getPaymentStatus() == PAYMENT_PENDING) {
+        if (NetworkChecker(context).isInternetConnected) {
+            viewModel.getCheckoutData()
+        }
+    }
+
     val navigation = getNavController()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(bottom = 16.dp)
-    ) {
+    Box(modifier = Modifier){
 
-        if (viewModel.showProgress.value) {
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(), color = Blue
-            )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 16.dp)
+        ) {
+
+            if (viewModel.showProgress.value) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(), color = Blue
+                )
+            }
+
+            TopToolbar(badgeNumber = viewModel.badgeNumber.value, onCartClicked = {
+                if (NetworkChecker(context).isInternetConnected) navigation.navigate(MyScreens.CartScreen.route)
+                else Toast.makeText(
+                    context, "Please, check your Internet Connection!", Toast.LENGTH_SHORT
+                ).show()
+            }, onProfileClicked = {
+                navigation.navigate(MyScreens.ProfileScreen.route)
+            })
+
+            CategoryBar(CATEGORY) {
+                navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
+            }
+
+            val productDataState = viewModel.dataProducts
+            val adsDataState = viewModel.dataAds
+            ProductSubjectList(TAGS, productDataState.value, adsDataState.value) {
+                navigation.navigate(MyScreens.ProductScreen.route + "/" + it)
+            }
+
         }
 
-        TopToolbar(badgeNumber = viewModel.badgeNumber.value, onCartClicked = {
-            if (NetworkChecker(context).isInternetConnected) navigation.navigate(MyScreens.CartScreen.route)
-            else Toast.makeText(
-                context, "Please, check your Internet Connection!", Toast.LENGTH_SHORT
-            ).show()
-        }, onProfileClicked = {
-            navigation.navigate(MyScreens.ProfileScreen.route)
-        })
+        if (viewModel.showPaymentResultDialog.value) {
 
-        CategoryBar(CATEGORY) {
-            navigation.navigate(MyScreens.CategoryScreen.route + "/" + it)
-        }
+            PaymentResultDialog(checkoutResult = viewModel.checkoutData.value) {
+                viewModel.showPaymentResultDialog.value = false
+                viewModel.setPaymentStatus(NO_PAYMENT)
+            }
 
-        val productDataState = viewModel.dataProducts
-        val adsDataState = viewModel.dataAds
-        ProductSubjectList(TAGS, productDataState.value, adsDataState.value) {
-            navigation.navigate(MyScreens.ProductScreen.route + "/" + it)
         }
 
     }
 
+}
+
+@Composable
+private fun PaymentResultDialog(
+    checkoutResult: Checkout,
+    onDismiss: () -> Unit
+) {
+
+    Dialog(onDismissRequest = onDismiss) {
+
+        Card(
+            elevation = 8.dp,
+            shape = Shapes.medium
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Text(
+                    text = "Payment Result",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                // Main Data
+                if (checkoutResult.order?.status?.toInt() == PAYMENT_SUCCESS) {
+
+                    AsyncImage(
+                        model = R.drawable.success_anim,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(110.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(text = "Payment was successful!", style = TextStyle(fontSize = 16.sp))
+                    Text(
+                        text = "Purchase Amount: " + stylePrice(
+                            (checkoutResult.order.amount).substring(
+                                0,
+                                (checkoutResult.order.amount).length - 1
+                            )
+                        )
+                    )
+
+                } else {
+
+                    AsyncImage(
+                        model = R.drawable.fail_anim,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(110.dp)
+                            .padding(top = 6.dp, bottom = 6.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(text = "Payment was not successful!", style = TextStyle(fontSize = 16.sp))
+                    Text(
+                        text = "Purchase Amount: " + stylePrice(
+                            (checkoutResult.order!!.amount).substring(
+                                0,
+                                (checkoutResult.order.amount).length - 1
+                            )
+                        )
+                    )
+
+                }
+
+                // Ok Button
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    TextButton(onClick = onDismiss) {
+                        Text(text = "ok")
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                }
+            }
+        }
+    }
 }
 
 // -----------------------------------------------------------------------

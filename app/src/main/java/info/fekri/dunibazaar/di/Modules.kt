@@ -12,6 +12,7 @@ import info.fekri.dunibazaar.model.repository.product.ProductRepository
 import info.fekri.dunibazaar.model.repository.product.ProductRepositoryImpl
 import info.fekri.dunibazaar.model.repository.user.UserRepository
 import info.fekri.dunibazaar.model.repository.user.UserRepositoryImpl
+import info.fekri.dunibazaar.ui.features.cartScreen.CartViewModel
 import info.fekri.dunibazaar.ui.features.categoryScreen.CategoryViewModel
 import info.fekri.dunibazaar.ui.features.mainScreen.MainViewModel
 import info.fekri.dunibazaar.ui.features.productScreen.ProductViewModel
@@ -37,7 +38,7 @@ val myModules = module {
     single<UserRepository> { UserRepositoryImpl(get(), get()) }
     single<ProductRepository> { ProductRepositoryImpl(get(), get<AppDatabase>().productDao()) }
     single<CommentRepository> { CommentRepositoryImpl(get()) }
-    single<CartRepository> { CartRepositoryImpl(get()) }
+    single<CartRepository> { CartRepositoryImpl(get(), get()) }
 
     viewModel { SignUpViewModel(get()) }
     viewModel { SignInViewModel(get()) }
@@ -45,4 +46,5 @@ val myModules = module {
     viewModel { CategoryViewModel(get()) }
     viewModel { ProductViewModel(get(), get(), get()) }
     viewModel { ProfileViewModel(get()) }
+    viewModel { CartViewModel(get(), get()) }
 }

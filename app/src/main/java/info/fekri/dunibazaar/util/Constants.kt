@@ -30,3 +30,8 @@ val TAGS = listOf<String>(
 )
 
 val EMPTY_PRODUCT = Product("", "", "", "", "", "", "", "", "", "")
+
+const val PAYMENT_SUCCESS = 1
+const val PAYMENT_PENDING = 0
+const val PAYMENT_FAILURE = -1
+const val NO_PAYMENT = -2
