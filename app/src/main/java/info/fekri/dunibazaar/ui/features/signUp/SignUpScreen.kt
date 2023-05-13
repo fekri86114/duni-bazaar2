@@ -1,11 +1,12 @@
 package info.fekri.dunibazaar.ui.features.signUp
 
-import android.content.Context
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,9 +18,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -28,6 +30,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
 import info.fekri.dunibazaar.R
@@ -54,23 +57,34 @@ import info.fekri.dunibazaar.ui.theme.Blue
 import info.fekri.dunibazaar.ui.theme.MainAppTheme
 import info.fekri.dunibazaar.ui.theme.Shapes
 import info.fekri.dunibazaar.util.MyScreens
+import info.fekri.dunibazaar.util.NetworkChecker
+import info.fekri.dunibazaar.util.VALUE_SUCCESS
 
 @Preview(showBackground = true)
 @Composable
-fun SignUpPreview() {
+fun SignUpScreenPreview() {
+
     MainAppTheme {
         Surface(
             color = BackgroundMain,
             modifier = Modifier.fillMaxSize()
-        ) { SignUpScreen() }
+        ) {
+            SignUpScreen()
+        }
     }
+
 }
 
 @Composable
 fun SignUpScreen() {
+    val uiController = rememberSystemUiController()
+    SideEffect { uiController.setStatusBarColor(Blue) }
+
+    val context = LocalContext.current
     val navigation = getNavController()
     val viewModel = getNavViewModel<SignUpViewModel>()
-    val context = LocalContext.current
+
+    clearInputs(viewModel = viewModel)
 
     Box {
 
@@ -84,35 +98,55 @@ fun SignUpScreen() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.95f),
+                .fillMaxHeight(0.95f)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             IconApp()
+
             MainCardView(navigation, viewModel) {
-                viewModel.signUpUser() // sign up
+
+                viewModel.signUpUser {
+
+                    if (it == VALUE_SUCCESS) {
+
+                        navigation.navigate(MyScreens.MainScreen.route) {
+                            popUpTo(MyScreens.MainScreen.route) {
+                                inclusive = true
+                            }
+                        }
+
+                    } else {
+                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+
             }
 
         }
-
     }
-
 }
 
 @Composable
 fun IconApp() {
+
     Surface(
         modifier = Modifier
             .clip(CircleShape)
             .size(64.dp)
     ) {
+
         Image(
+            modifier = Modifier.padding(14.dp),
             painter = painterResource(id = R.drawable.ic_icon_app),
-            contentDescription = null,
-            modifier = Modifier.padding(14.dp)
+            contentDescription = null
         )
+
     }
+
 }
 
 @Composable
@@ -136,127 +170,118 @@ fun MainCardView(navigation: NavController, viewModel: SignUpViewModel, SignUpEv
         ) {
 
             Text(
-                text = "Sign Up",
                 modifier = Modifier.padding(top = 18.dp, bottom = 18.dp),
+                text = "Sign Up",
                 style = TextStyle(color = Blue, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             )
 
             MainTextField(
-                edtValue = name.value,
-                icon = R.drawable.ic_person,
-                hint = "Your full name",
+                name.value,
+                R.drawable.ic_person,
+                "Your Full Name"
             ) { viewModel.name.value = it }
-
-            MainTextField(
-                edtValue = email.value,
-                icon = R.drawable.ic_email,
-                hint = "Email",
-            ) { viewModel.email.value = it }
-
+            MainTextField(email.value, R.drawable.ic_email, "Email") { viewModel.email.value = it }
             PasswordTextField(
-                edtValue = password.value,
-                icon = R.drawable.ic_password,
-                hint = "Password",
+                password.value,
+                R.drawable.ic_password,
+                "Password"
             ) { viewModel.password.value = it }
-
             PasswordTextField(
-                edtValue = confirmPassword.value,
-                icon = R.drawable.ic_password,
-                hint = "Confirm password",
+                confirmPassword.value,
+                R.drawable.ic_password,
+                "Confirm Password"
             ) { viewModel.confirmPassword.value = it }
-
-
-            Button(
-                onClick = {
-                    if (
-                        name.value.isNotEmpty() &&
-                        email.value.isNotEmpty() &&
-                        password.value.isNotEmpty() &&
-                        confirmPassword.value.isNotEmpty()
-                    ) {
-                        if (password.value == confirmPassword.value) {
-                            if (password.value.length >= 8) {
-                                // check email format
-                                if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) {
-                                    // call SignUpEvent
-                                    // you should use `invoke()` when you are using an Event
-                                    // in a method (function)
+            Button(onClick = {
+                if (name.value.isNotEmpty() && email.value.isNotEmpty() && password.value.isNotEmpty() && confirmPassword.value.isNotEmpty()) {
+                    if (password.value == confirmPassword.value) {
+                        if (password.value.length >= 8) {
+                            if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches()) {
+                                if (NetworkChecker(context).isInternetConnected) {
                                     SignUpEvent.invoke()
                                 } else {
-                                    Toast
-                                        .makeText(
-                                            context,
-                                            "Email format is not correct!",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                }
-                            } else {
-                                Toast
-                                    .makeText(
+                                    Toast.makeText(
                                         context,
-                                        "Values should be more than or equal to 8!",
+                                        "please connect to internet",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                            }
-                        } else {
-                            Toast
-                                .makeText(
+                                }
+                            } else {
+                                Toast.makeText(
                                     context,
-                                    "No password value matches!",
+                                    "email format is not true",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                        }
-                    } else {
-                        Toast
-                            .makeText(
+                            }
+                        } else {
+                            Toast.makeText(
                                 context,
-                                "Please, fill out the blanks!",
+                                "password characters should be more than 8!",
                                 Toast.LENGTH_SHORT
                             ).show()
+                        }
+                    } else {
+                        Toast.makeText(context, "passwords are not the same!", Toast.LENGTH_SHORT)
+                            .show()
                     }
-                },
-                modifier = Modifier
-                    .padding(top = 28.dp, bottom = 18.dp)
-            ) {
+                } else {
+                    Toast.makeText(context, "please write data first...", Toast.LENGTH_SHORT).show()
+                }
+            }, modifier = Modifier.padding(top = 28.dp, bottom = 8.dp)) {
                 Text(
-                    text = "Register Account",
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    text = "Register Account"
                 )
             }
 
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(bottom = 18.dp),
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(bottom = 18.dp)
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Text(text = "Already have and Account?")
+                Text("Already have  an account?")
                 Spacer(modifier = Modifier.width(8.dp))
                 TextButton(onClick = {
-                    // go to SignInScreen if user have account
-                    // and empty the popUpTo to not to comeback to SignUpScreen
+
                     navigation.navigate(MyScreens.SignInScreen.route) {
                         popUpTo(MyScreens.SignUpScreen.route) {
                             inclusive = true
                         }
                     }
-                }) { Text(text = "Login") }
+
+                }) { Text("Log In", color = Blue) }
 
             }
+
 
         }
 
     }
 
+
 }
 
 @Composable
-fun PasswordTextField(
-    edtValue: String,
-    icon: Int,
-    hint: String,
-    onValueChanges: (String) -> Unit
-) {
+fun MainTextField(edtValue: String, icon: Int, hint: String, onValueChanges: (String) -> Unit) {
+
+    OutlinedTextField(
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        label = { Text(hint) },
+        value = edtValue,
+        singleLine = true,
+        onValueChange = onValueChanges,
+        placeholder = { Text(hint) },
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .padding(top = 12.dp),
+        shape = Shapes.medium,
+        leadingIcon = { Icon(painterResource(icon), null) }
+    )
+
+}
+
+@Composable
+fun PasswordTextField(edtValue: String, icon: Int, hint: String, onValueChanges: (String) -> Unit) {
     val passwordVisible = remember { mutableStateOf(false) }
 
     OutlinedTextField(
@@ -273,8 +298,9 @@ fun PasswordTextField(
         visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
-            val image = if (passwordVisible.value) painterResource(id = R.drawable.ic_invisible)
-            else painterResource(id = R.drawable.ic_visible)
+
+            val image = if (passwordVisible.value) painterResource(R.drawable.ic_invisible)
+            else painterResource(R.drawable.ic_visible)
 
             Icon(
                 painter = image,
@@ -284,26 +310,12 @@ fun PasswordTextField(
 
         }
     )
+
 }
 
-@Composable
-fun MainTextField(
-    edtValue: String,
-    icon: Int,
-    hint: String,
-    onValueChanges: (String) -> Unit
-) {
-    OutlinedTextField(
-        label = { Text(hint) },
-        value = edtValue,
-        singleLine = true,
-        onValueChange = onValueChanges,
-        placeholder = { Text(hint) },
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .padding(top = 12.dp),
-        shape = Shapes.medium,
-        leadingIcon = { Icon(painterResource(icon), null) }
-    )
+fun clearInputs(viewModel: SignUpViewModel) {
+    viewModel.name.value = ""
+    viewModel.email.value = ""
+    viewModel.password.value = ""
+    viewModel.confirmPassword.value = ""
 }
-

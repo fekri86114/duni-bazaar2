@@ -13,6 +13,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.burnoo.cokoin.navigation.getNavController
 import info.fekri.dunibazaar.R
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
@@ -43,40 +45,51 @@ fun IntroScreenPreview() {
 
 @Composable
 fun IntroScreen() {
+    val uiController = rememberSystemUiController()
+    SideEffect { uiController.setStatusBarColor(Blue) }
+
     val navigation = getNavController()
 
     Image(
-        painter = painterResource(id = R.drawable.img_intro),
-        contentDescription = null,
         modifier = Modifier.fillMaxSize(),
+        painter = painterResource(R.drawable.img_intro),
+        contentDescription = null,
         contentScale = ContentScale.Crop
     )
+
     Column(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.75f),
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.78f),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
+
         Button(
             modifier = Modifier.fillMaxWidth(0.7f),
             onClick = {
-                /* go to `SignUpScreen` */
                 navigation.navigate(MyScreens.SignUpScreen.route)
             }
         ) {
-            Text(text = "Sign Up")
+            Text(
+                text = "Sign Up"
+            )
         }
 
+
         Button(
-            modifier = Modifier
-                .fillMaxWidth(0.7f),
+            modifier = Modifier.fillMaxWidth(0.7f),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
             onClick = {
-                /* go to `SignInScreen` */
                 navigation.navigate(MyScreens.SignInScreen.route)
-            },
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+            }
         ) {
-            Text(text = "Sign In", color = Blue)
+            Text(
+                text = "Sign In" ,
+                color = Blue
+            )
         }
+
     }
 
 }

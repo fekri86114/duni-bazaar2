@@ -1,6 +1,7 @@
 package info.fekri.dunibazaar.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,14 +10,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dev.burnoo.cokoin.Koin
+import dev.burnoo.cokoin.get
 import dev.burnoo.cokoin.navigation.KoinNavHost
 import info.fekri.dunibazaar.di.myModules
+import info.fekri.dunibazaar.model.repository.TokenInMemory
+import info.fekri.dunibazaar.model.repository.user.UserRepository
 import info.fekri.dunibazaar.ui.features.IntroScreen
+import info.fekri.dunibazaar.ui.features.cartScreen.CartScreen
+import info.fekri.dunibazaar.ui.features.categoryScreen.CategoryScreen
+import info.fekri.dunibazaar.ui.features.mainScreen.MainScreen
+import info.fekri.dunibazaar.ui.features.productScreen.ProductScreen
+import info.fekri.dunibazaar.ui.features.profileScreen.ProfileScreen
 import info.fekri.dunibazaar.ui.features.signIn.SignInScreen
 import info.fekri.dunibazaar.ui.features.signUp.SignUpScreen
 import info.fekri.dunibazaar.ui.theme.BackgroundMain
@@ -24,26 +32,35 @@ import info.fekri.dunibazaar.ui.theme.MainAppTheme
 import info.fekri.dunibazaar.util.KEY_CATEGORY_ARG
 import info.fekri.dunibazaar.util.KEY_PRODUCT_ARG
 import info.fekri.dunibazaar.util.MyScreens
+import org.koin.android.ext.koin.androidContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         setContent {
-            Koin(appDeclaration = { modules(myModules) }) {
+
+            Koin(appDeclaration = {
+                androidContext(this@MainActivity)
+                modules(myModules)
+            }) {
                 MainAppTheme {
-                    Surface(
-                        color = BackgroundMain,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
+                    Surface(color = BackgroundMain, modifier = Modifier.fillMaxSize()) {
+
+                        val userRepository: UserRepository = get()
+                        userRepository.loadToken()
+
                         DuniBazaarUi()
+
                     }
                 }
             }
+
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun MainPreview() {
     MainAppTheme {
@@ -59,26 +76,29 @@ fun MainPreview() {
 @Composable
 fun DuniBazaarUi() {
     val navController = rememberNavController()
-    KoinNavHost(
-        navController = navController,
-        startDestination = MyScreens.IntroScreen.route
-    ) {
+    KoinNavHost(navController = navController, startDestination = MyScreens.MainScreen.route) {
 
-        composable(route = MyScreens.MainScreen.route) {
-            MainScreen()
+        composable(MyScreens.MainScreen.route) {
+
+            if (TokenInMemory.token != null) {
+                MainScreen()
+            } else {
+                IntroScreen()
+            }
+
         }
 
         composable(
-            "${MyScreens.ProductScreen.route}/$KEY_PRODUCT_ARG",
+            route = MyScreens.ProductScreen.route + "/{$KEY_PRODUCT_ARG}",
             arguments = listOf(navArgument(KEY_PRODUCT_ARG) {
-                type = NavType.IntType
+                type = NavType.StringType
             })
         ) {
-            ProductScreen(it.arguments!!.getInt(KEY_PRODUCT_ARG, -1))
+            ProductScreen(it.arguments!!.getString(KEY_PRODUCT_ARG, "null"))
         }
 
         composable(
-            "${MyScreens.CategoryScreen.route}/$KEY_CATEGORY_ARG",
+            route = MyScreens.CategoryScreen.route + "/{$KEY_CATEGORY_ARG}",
             arguments = listOf(navArgument(KEY_CATEGORY_ARG) {
                 type = NavType.StringType
             })
@@ -102,44 +122,6 @@ fun DuniBazaarUi() {
             SignInScreen()
         }
 
-        composable(MyScreens.IntroScreen.route) {
-            IntroScreen()
-        }
-
-        composable(MyScreens.NoInternetScreen.route) {
-            NoInternetScreen()
-        }
-
     }
 
-
 }
-
-@Composable
-fun NoInternetScreen() {
-}
-
-
-
-
-@Composable
-fun CartScreen() {
-}
-
-@Composable
-fun ProfileScreen() {
-}
-
-@Composable
-fun CategoryScreen(categoryId: String) {
-}
-
-@Composable
-fun ProductScreen(productId: Int) {
-}
-
-@Composable
-fun MainScreen() {
-}
-
-
