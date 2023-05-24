@@ -1,5 +1,5 @@
 ### duni-bazaar
-#### ***DuniBazaar*** is one of the education apps of [Dunijet](https://dunijet.ir)
+#### Buy with ***DuniBazaar***
 
 ---
 
